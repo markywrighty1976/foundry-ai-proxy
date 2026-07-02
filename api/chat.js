@@ -9,6 +9,8 @@ export default async function handler(req, res) {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) return res.status(500).json({ error: 'Missing API key' });
 
+  const { system, messages } = req.body;
+
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -16,7 +18,12 @@ export default async function handler(req, res) {
       'x-api-key': key,
       'anthropic-version': '2023-06-01'
     },
-    body: JSON.stringify(req.body)
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1000,
+      system: system,
+      messages: messages
+    })
   });
 
   const data = await response.json();
